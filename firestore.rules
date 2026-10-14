@@ -1,0 +1,112 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isSignedIn() && (
+        resource.data.ownerId == request.auth.uid ||
+        request.auth.token.email == "howercommerce@gmail.com"
+      );
+    }
+
+    function isIncomingDocOwner() {
+      return isSignedIn() && (
+        request.resource.data.ownerId == request.auth.uid ||
+        request.auth.token.email == "howercommerce@gmail.com"
+      );
+    }
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow get: if isOwner(userId) || request.auth.token.email == "howercommerce@gmail.com";
+      allow list: if isSignedIn();
+      allow create, update: if isOwner(userId) || request.auth.token.email == "howercommerce@gmail.com";
+      allow delete: if false;
+    }
+
+    // Store settings
+    match /settings/{settingId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create, update: if isIncomingDocOwner();
+      allow delete: if isDocOwner();
+    }
+
+    // Products catalog
+    match /products/{productId} {
+      allow get: if isSignedIn();
+      allow list: if isDocOwner();
+      allow create: if isIncomingDocOwner();
+      allow update: if isIncomingDocOwner() && isDocOwner();
+      allow delete: if isDocOwner();
+    }
+
+    // Sales transactions & receipts
+    match /sales/{saleId} {
+      allow get: if isSignedIn();
+      allow list: if isDocOwner();
+      allow create: if isIncomingDocOwner();
+      allow update: if isIncomingDocOwner() && isDocOwner();
+      allow delete: if isDocOwner();
+    }
+
+    // Customers
+    match /customers/{customerId} {
+      allow get: if isSignedIn();
+      allow list: if isDocOwner();
+      allow create: if isIncomingDocOwner();
+      allow update: if isIncomingDocOwner() && isDocOwner();
+      allow delete: if isDocOwner();
+    }
+
+    // Stock Movements audit trail
+    match /stockMovements/{movementId} {
+      allow get: if isSignedIn();
+      allow list: if isDocOwner();
+      allow create: if isIncomingDocOwner();
+      allow update: if false; // immutable audit logs
+      allow delete: if isDocOwner();
+    }
+
+    // Suppliers
+    match /suppliers/{supplierId} {
+      allow get: if isSignedIn();
+      allow list: if isDocOwner();
+      allow create: if isIncomingDocOwner();
+      allow update: if isIncomingDocOwner() && isDocOwner();
+      allow delete: if isDocOwner();
+    }
+
+    // Purchases
+    match /purchases/{purchaseId} {
+      allow get: if isSignedIn();
+      allow list: if isDocOwner();
+      allow create: if isIncomingDocOwner();
+      allow update: if isIncomingDocOwner() && isDocOwner();
+      allow delete: if isDocOwner();
+    }
+
+    // Customer Payments
+    match /payments/{paymentId} {
+      allow get: if isSignedIn();
+      allow list: if isDocOwner();
+      allow create: if isIncomingDocOwner();
+      allow update: if isIncomingDocOwner() && isDocOwner();
+      allow delete: if isDocOwner();
+    }
+  }
+}

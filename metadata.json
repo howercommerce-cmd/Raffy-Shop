@@ -1,0 +1,6 @@
+{
+  "name": "Smart Shop Management System",
+  "description": "Professional retail Point of Sale, inventory management, billing, and financial reporting system with Pakistani Rupee support and real-time database.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

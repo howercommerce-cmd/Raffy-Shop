@@ -1,0 +1,206 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile containing authenticated user identity and shop role.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["owner", "admin", "cashier"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "ShopSettings": {
+      "title": "ShopSettings",
+      "description": "Customizable shop details, currency, receipt footer, and invoice settings.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "shopName": { "type": "string", "maxLength": 100 },
+        "shopLogo": { "type": "string" },
+        "address": { "type": "string", "maxLength": 200 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "receiptFooter": { "type": "string", "maxLength": 300 },
+        "currency": { "type": "string", "maxLength": 10 },
+        "currencySymbol": { "type": "string", "maxLength": 10 },
+        "defaultLowStockThreshold": { "type": "number" },
+        "taxPercentage": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "shopName"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Inventory product with barcode, SKU, category, purchase/sale prices, and stock count.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "name": { "type": "string", "maxLength": 150 },
+        "code": { "type": "string", "maxLength": 50 },
+        "barcode": { "type": "string", "maxLength": 60 },
+        "category": { "type": "string", "maxLength": 60 },
+        "purchasePrice": { "type": "number" },
+        "salePrice": { "type": "number" },
+        "quantity": { "type": "number" },
+        "lowStockThreshold": { "type": "number" },
+        "unit": { "type": "string", "maxLength": 20 },
+        "description": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "name", "salePrice", "purchasePrice", "quantity"]
+    },
+    "Sale": {
+      "title": "Sale",
+      "description": "Completed point of sale invoice including line items with purchase cost snapshots, payments, and balances.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "invoiceNumber": { "type": "string", "maxLength": 40 },
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string", "maxLength": 100 },
+        "customerPhone": { "type": "string", "maxLength": 30 },
+        "subtotal": { "type": "number" },
+        "discountAmount": { "type": "number" },
+        "totalAmount": { "type": "number" },
+        "paidAmount": { "type": "number" },
+        "balanceDue": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["Cash", "JazzCash", "Easypaisa", "Bank Transfer", "Other"] },
+        "status": { "type": "string", "enum": ["completed", "refunded", "cancelled"] },
+        "totalCost": { "type": "number" },
+        "grossProfit": { "type": "number" },
+        "notes": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "invoiceNumber", "totalAmount", "paidAmount", "balanceDue", "paymentMethod", "status"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Retail store customer record with accumulated purchases, payments, and ledger balances.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "name": { "type": "string", "maxLength": 100 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "address": { "type": "string", "maxLength": 200 },
+        "totalPurchases": { "type": "number" },
+        "totalPaid": { "type": "number" },
+        "outstandingBalance": { "type": "number" },
+        "notes": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "name"]
+    },
+    "StockMovement": {
+      "title": "StockMovement",
+      "description": "Audit trail log recording every inventory quantity increase, decrease, adjustment, return, or damage.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "productId": { "type": "string" },
+        "productName": { "type": "string" },
+        "type": { "type": "string", "enum": ["sale", "purchase", "adjustment", "damage", "return"] },
+        "quantityDelta": { "type": "number" },
+        "newQuantity": { "type": "number" },
+        "reason": { "type": "string", "maxLength": 200 },
+        "referenceId": { "type": "string", "maxLength": 50 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "productId", "type", "quantityDelta", "newQuantity"]
+    },
+    "Supplier": {
+      "title": "Supplier",
+      "description": "Supplier contacts and purchasing partner info.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "name": { "type": "string", "maxLength": 100 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "company": { "type": "string", "maxLength": 100 },
+        "address": { "type": "string", "maxLength": 200 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "name"]
+    },
+    "Purchase": {
+      "title": "Purchase",
+      "description": "Stock purchase order received from supplier.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "purchaseNumber": { "type": "string", "maxLength": 50 },
+        "supplierName": { "type": "string", "maxLength": 100 },
+        "supplierPhone": { "type": "string", "maxLength": 30 },
+        "totalAmount": { "type": "number" },
+        "notes": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "purchaseNumber", "totalAmount"]
+    },
+    "Payment": {
+      "title": "Payment",
+      "description": "Customer debt ledger payments.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string", "maxLength": 100 },
+        "amount": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["Cash", "JazzCash", "Easypaisa", "Bank Transfer", "Other"] },
+        "notes": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "customerId", "amount", "paymentMethod"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Individual user accounts and auth roles."
+    },
+    "/settings/{settingId}": {
+      "schema": "ShopSettings",
+      "description": "Store configuration and preferences."
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Products catalog and current stock levels."
+    },
+    "/sales/{saleId}": {
+      "schema": "Sale",
+      "description": "Completed point of sale transactions and invoices."
+    },
+    "/customers/{customerId}": {
+      "schema": "Customer",
+      "description": "Customer list and credit balance tracking."
+    },
+    "/stockMovements/{movementId}": {
+      "schema": "StockMovement",
+      "description": "History of all inventory stock updates."
+    },
+    "/suppliers/{supplierId}": {
+      "schema": "Supplier",
+      "description": "Suppliers and vendors records."
+    },
+    "/purchases/{purchaseId}": {
+      "schema": "Purchase",
+      "description": "Inventory restock purchases."
+    },
+    "/payments/{paymentId}": {
+      "schema": "Payment",
+      "description": "Customer credit payment records."
+    }
+  }
+}
